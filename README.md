@@ -1,6 +1,5 @@
 <h1 align="left">
   <img src="docs/logo.jpeg" alt="HttpMutator" width="220"/><br/>
-  HttpMutator
 </h1>
 
 HttpMutator is a black-box mutation testing tool for web APIs that generates faulty yet realistic variants of HTTP responses to assess the fault-detection capability of API testing tools and test oracles.
