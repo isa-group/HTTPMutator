@@ -1,7 +1,60 @@
-/target
-/classes
-/out
+#############################
+#  Maven multi-module build #
+#############################
+
+# Ignore Maven target/ directories (all modules)
+target/
+
+# Maven wrapper logs
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+.mvn/wrapper/maven-wrapper-resources/
+
+#############################
+#      IntelliJ IDEA        #
+#############################
+
+# Project config directory
+.idea/
+
+# IntelliJ module files (exist in every module)
+*.iml
+*.ipr
+*.iws
+
+# IntelliJ build output
+out/
+
+#############################
+#          VS Code          #
+#############################
+
+.vscode/
+
+#############################
+#       Java / General      #
+#############################
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Others
+*.class
+*.jar
+*.war
+*.ear
+
+# Gradle (if any submodule uses Gradle)
+.gradle/
+build/
+
+#############################
+#       Custom files        #
+#############################
+
 TODO.txt
-.idea
-.vscode
-JSONmutator.iml
