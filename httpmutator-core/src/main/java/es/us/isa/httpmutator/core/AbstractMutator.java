@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import es.us.isa.httpmutator.core.util.RandomUtils;
+
 /**
  * Superclass for mutators. A mutator decides on the type of mutation to be
  * applied
@@ -19,14 +21,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * @author Alberto Martin-Lopez
  */
-public abstract class AbstractMutator extends RandomManager {
+public abstract class AbstractMutator {
     protected LinkedHashMap<String, AbstractOperator> operators; // Map of mutation operators. The key should be equal to the
                                                            // one in the properties file
     protected float prob; // Probability to apply this mutation to an element. Configured in properties
                           // file
 
     public AbstractMutator() {
-        super();
         operators = new LinkedHashMap<>(); // to produce operators in a deterministic order
     }
 
@@ -47,7 +48,7 @@ public abstract class AbstractMutator extends RandomManager {
     }
 
     protected boolean shouldApplyMutation() {
-        return rand2.nextFloat() <= prob;
+        return RandomUtils.nextFloat() <= prob;
     }
 
     /**
@@ -69,7 +70,7 @@ public abstract class AbstractMutator extends RandomManager {
         float sumWeights = operators.values().stream() // Sum all weights
                 .map(AbstractOperator::getWeight)
                 .reduce(0f, Float::sum);
-        float randomFloat = rand2.nextFloat() * sumWeights; // Generate random float between 0 and sumWeights
+        float randomFloat = RandomUtils.nextFloat() * sumWeights; // Generate random float between 0 and sumWeights
 
         float acc = 0;
         String operatorName = null;

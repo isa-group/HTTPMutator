@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 /**
  * Operator that mutates an array by disordering the elements in it.
@@ -29,9 +30,9 @@ public class ArrayDisorderElementsOperator extends AbstractOperator {
     protected Object doMutate(Object arrayNodeObject) {
         ArrayNode arrayNode = (ArrayNode)arrayNodeObject;
         if (arrayNode.size() > 1) { // Apply this mutation only if array contains more than 1 element (doesn't make sense otherwise)
-            int elementToDisorderIndex = rand1.nextInt(0, arrayNode.size() - 1);
+            int elementToDisorderIndex = RandomUtils.nextInt(0, arrayNode.size());
             int whereToInsert;
-            do whereToInsert = rand1.nextInt(0, arrayNode.size() - 1);
+            do whereToInsert = RandomUtils.nextInt(0, arrayNode.size());
             while(whereToInsert == elementToDisorderIndex);
             JsonNode elementToDisorder = arrayNode.remove(elementToDisorderIndex); // Remove an element
             arrayNode.insert(whereToInsert, elementToDisorder); // Insert it elsewhere

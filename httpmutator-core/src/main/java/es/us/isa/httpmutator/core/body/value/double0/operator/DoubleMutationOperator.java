@@ -2,6 +2,7 @@ package es.us.isa.httpmutator.core.body.value.double0.operator;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 /**
@@ -23,7 +24,7 @@ public class DoubleMutationOperator extends AbstractOperator {
     @Override
     protected Object doMutate(Object doubleObject) {
         Double doubleValue = (Double)doubleObject;
-        float randomValue = rand2.nextFloat();
+        float randomValue = RandomUtils.nextFloat();
 
         if (randomValue <= 1f/2) { // Mutation: subtract delta
             return doubleValue + delta;

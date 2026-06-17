@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
@@ -82,7 +83,7 @@ public class ObjectRemoveObjectTypeElementOperator extends AbstractOperator {
         // logger.debug("Mutating object by removing object-type properties: {}", objectNodeObject);
         ObjectNode objectNode = (ObjectNode) objectNodeObject;
         int randomProperty;
-        int removedProperties = rand1.nextInt(minRemovedProperties, maxRemovedProperties); // Remove between min and max
+        int removedProperties = RandomUtils.nextIntInclusive(minRemovedProperties, maxRemovedProperties); // Remove between min and max
                                                                                            // properties to object
         List<String> objectPropertyNames = new ArrayList<>();
         Iterator<Entry<String, JsonNode>> it = objectNode.fields();
@@ -97,7 +98,7 @@ public class ObjectRemoveObjectTypeElementOperator extends AbstractOperator {
 
         for (int i = 1; i <= removedProperties; i++) {
             if (!objectPropertyNames.isEmpty()) { // If there are object-type properties identified
-                randomProperty = rand2.nextInt(objectPropertyNames.size());
+                randomProperty = RandomUtils.nextInt(objectPropertyNames.size());
                 objectNode.remove(objectPropertyNames.get(randomProperty)); // Remove a random object-type property
                 objectPropertyNames.remove(randomProperty);
             }

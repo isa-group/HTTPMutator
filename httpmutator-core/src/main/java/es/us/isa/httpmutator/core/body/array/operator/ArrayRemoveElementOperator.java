@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 /**
  * Operator that mutates an array by removing a number of elements from it.
@@ -48,11 +49,11 @@ public class ArrayRemoveElementOperator extends AbstractOperator {
     @Override
     protected Object doMutate(Object arrayNodeObject) {
         ArrayNode arrayNode = (ArrayNode)arrayNodeObject;
-        int removedElements = rand1.nextInt(minRemovedElements, maxRemovedElements); // Remove between min and max elements to array
+        int removedElements = RandomUtils.nextIntInclusive(minRemovedElements, maxRemovedElements); // Remove between min and max elements to array
 
         for (int i=1; i<=removedElements; i++)
             if (arrayNode.size() > 0)
-                arrayNode.remove(rand2.nextInt(arrayNode.size())); // Remove a random element
+                arrayNode.remove(RandomUtils.nextInt(arrayNode.size())); // Remove a random element
 
         return arrayNode;
     }

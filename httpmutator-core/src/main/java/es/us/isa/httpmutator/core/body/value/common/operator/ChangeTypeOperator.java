@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.body.value.string0.operator.StringReplacementOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 /**
  * Operator that mutates an element by changing its type (int, string...)
@@ -41,16 +42,16 @@ public class ChangeTypeOperator extends AbstractOperator {
 
     @Override
     protected Object doMutate(Object elementObject) {
-        float randomValue = rand2.nextFloat();
+        float randomValue = RandomUtils.nextFloat();
         Object returnObject = null;
 
         while (returnObject == null) {
             if (randomValue > 0 && randomValue <= 1f/6 && !type.equals("Long")) {
-                returnObject = rand1.nextLong(minLong, maxLong); // Return random long
+                returnObject = RandomUtils.nextLongInclusive(minLong, maxLong); // Return random long
             } else if (randomValue > 1f/6 && randomValue <= 2f/6 && !type.equals("Double")) {
-                returnObject = rand1.nextUniform(minDouble, maxDouble); // Return random double
+                returnObject = RandomUtils.nextUniform(minDouble, maxDouble); // Return random double
             } else if (randomValue > 2f/6 && randomValue <= 3f/6 && !type.equals("Boolean")) {
-                returnObject = rand2.nextBoolean(); // Return random boolean
+                returnObject = RandomUtils.nextBoolean(); // Return random boolean
             } else if (randomValue > 3f/6 && randomValue <= 4f/6 && !type.equals("String")) {
                 returnObject = (new StringReplacementOperator()).mutate(null);
             } else if (randomValue > 4f/6 && randomValue <= 5f/6 && !type.equals("ObjectNode")) {
@@ -58,7 +59,7 @@ public class ChangeTypeOperator extends AbstractOperator {
             } else if (randomValue > 5f/6 && randomValue <= 1 && !type.equals("ArrayNode")) {
                 returnObject = new ArrayNode(JsonNodeFactory.instance); // Return empty array
             } else { // This happens when an element is attempted to be converted into the same type (e.g. Long to Long)
-                randomValue = rand2.nextFloat(); // In that case, regenerate randomValue and try again
+                randomValue = RandomUtils.nextFloat(); // In that case, regenerate randomValue and try again
             }
         }
 

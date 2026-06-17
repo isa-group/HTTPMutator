@@ -1,7 +1,5 @@
 package es.us.isa.httpmutator.core.body.value.string0.operator;
 
-import java.util.Random;
-
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -27,8 +25,8 @@ public class StringMutationOperator extends AbstractOperator {
     protected Object doMutate(Object stringObject) {
         String string = (String)stringObject;
         StringBuilder sb = new StringBuilder(string);
-        int charPosition = string.length()==0 ? 0 : rand1.nextInt(0, string.length()-1);
-        float randomValue = rand2.nextFloat();
+        int charPosition = string.length()==0 ? 0 : RandomUtils.nextInt(0, string.length());
+        float randomValue = RandomUtils.nextFloat();
 
         if (randomValue <= 1f/3 && string.length()>0) { // Remove char
             sb.deleteCharAt(charPosition);

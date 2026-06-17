@@ -4,6 +4,7 @@ import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 
 public class StatusCodeReplacementWith50XOperator extends AbstractOperator {
@@ -17,9 +18,9 @@ public class StatusCodeReplacementWith50XOperator extends AbstractOperator {
     @Override
     protected Object doMutate(Object statusCode) {
         int statusCodeInteger = (int)statusCode;
-        int newStatusCode = SC50X[rand2.nextInt(SC50X.length)];
+        int newStatusCode = SC50X[RandomUtils.nextInt(SC50X.length)];
         while (newStatusCode == statusCodeInteger) {
-            newStatusCode = SC50X[rand2.nextInt(SC50X.length)];
+            newStatusCode = SC50X[RandomUtils.nextInt(SC50X.length)];
         }
         return newStatusCode;
     }

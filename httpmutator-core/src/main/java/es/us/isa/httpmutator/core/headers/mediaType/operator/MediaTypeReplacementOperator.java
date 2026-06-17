@@ -4,6 +4,7 @@ import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 public class MediaTypeReplacementOperator extends AbstractOperator {
     private static final String[] CT_STRINGS = {"application/json", "application/xml", "text/plain", "text/html", "text/css", "text/javascript", "application/x-www-form-urlencoded"};
@@ -16,9 +17,9 @@ public class MediaTypeReplacementOperator extends AbstractOperator {
     @Override
     protected  Object doMutate(Object stringObject) {
         String mediaType = (String) stringObject;
-        String newMediaType = CT_STRINGS[rand2.nextInt(CT_STRINGS.length)];
+        String newMediaType = CT_STRINGS[RandomUtils.nextInt(CT_STRINGS.length)];
         while (newMediaType.equalsIgnoreCase(mediaType)) {
-            newMediaType = CT_STRINGS[rand2.nextInt(CT_STRINGS.length)];
+            newMediaType = CT_STRINGS[RandomUtils.nextInt(CT_STRINGS.length)];
         }
         return newMediaType;
     }

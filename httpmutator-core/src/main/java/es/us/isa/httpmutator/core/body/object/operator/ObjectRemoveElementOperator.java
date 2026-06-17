@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 /**
  * Operator that mutates an object by removing a number of properties from it.
@@ -52,12 +53,12 @@ public class ObjectRemoveElementOperator extends AbstractOperator {
     protected Object doMutate(Object objectNodeObject) {
         ObjectNode objectNode = (ObjectNode)objectNodeObject;
         int randomValue;
-        int removedProperties = rand1.nextInt(minRemovedProperties, maxRemovedProperties); // Remove between min and max properties to object
+        int removedProperties = RandomUtils.nextIntInclusive(minRemovedProperties, maxRemovedProperties); // Remove between min and max properties to object
         List<String> propertyNames = Lists.newArrayList(objectNode.fieldNames());
 
         for (int i=1; i<=removedProperties; i++)
             if (objectNode.size() > 0) {
-                randomValue = rand2.nextInt(propertyNames.size());
+                randomValue = RandomUtils.nextInt(propertyNames.size());
                 objectNode.remove(propertyNames.get(randomValue)); // Remove a random property
                 propertyNames.remove(randomValue); // Remove property from the list of properties to possibly remove
             }

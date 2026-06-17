@@ -8,12 +8,11 @@ package es.us.isa.httpmutator.core;
  *
  * @author Alberto Martin-Lopez
  */
-public abstract class AbstractOperator extends RandomManager {
+public abstract class AbstractOperator {
 
     protected float weight;
 
     public AbstractOperator() {
-        super();
     }
 
     public float getWeight() {

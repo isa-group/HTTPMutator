@@ -4,6 +4,7 @@ import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 public class CharsetReplacementOperator extends AbstractOperator {
     private final String[] CHARSET_VALUES = {
@@ -33,13 +34,13 @@ public class CharsetReplacementOperator extends AbstractOperator {
     @Override
     protected Object doMutate(Object charset) {
         if (charset == null) {
-            return CHARSET_VALUES[rand2.nextInt(CHARSET_VALUES.length)];
+            return CHARSET_VALUES[RandomUtils.nextInt(CHARSET_VALUES.length)];
         }
-        
+
         String charsetString = (String) charset;
-        String newCharsetString = CHARSET_VALUES[rand2.nextInt(CHARSET_VALUES.length)];
+        String newCharsetString = CHARSET_VALUES[RandomUtils.nextInt(CHARSET_VALUES.length)];
         while (charsetString.equals(newCharsetString)) {
-            newCharsetString = CHARSET_VALUES[rand2.nextInt(CHARSET_VALUES.length)];
+            newCharsetString = CHARSET_VALUES[RandomUtils.nextInt(CHARSET_VALUES.length)];
         }
         return newCharsetString;
     }

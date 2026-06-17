@@ -33,7 +33,7 @@ public class StringBoundaryOperator extends AbstractOperator {
     @Override
     protected Object doMutate(Object element) {
         String original = (String) element;
-        float randomValue = rand2.nextFloat();
+        float randomValue = RandomUtils.nextFloat();
 
         if (randomValue <= 1f / 5) { // Empty string
             if (original.isEmpty()) {

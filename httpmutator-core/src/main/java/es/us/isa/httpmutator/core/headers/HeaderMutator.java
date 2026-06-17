@@ -21,6 +21,7 @@ import es.us.isa.httpmutator.core.headers.charset.CharsetMutator;
 import es.us.isa.httpmutator.core.headers.location.LocationMutator;
 import es.us.isa.httpmutator.core.headers.mediaType.MediaTypeMutator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 public class HeaderMutator extends AbstractMutator {
 
@@ -29,7 +30,6 @@ public class HeaderMutator extends AbstractMutator {
     private static final Set<String> MEDIA_TYPE_PREFIXES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             "application", "audio", "image", "message", "model", "multipart", "text", "video")));
 
-    private final Random rand = new Random();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private CharsetMutator charsetMutator;
@@ -302,7 +302,7 @@ public class HeaderMutator extends AbstractMutator {
 
     // Utility methods
     private boolean shouldSkipMutation(double probability) {
-        return rand.nextFloat() >= probability;
+        return RandomUtils.nextFloat() >= probability;
     }
 
     private void updateHeaderField(ObjectNode node, String headerName, Object value) {

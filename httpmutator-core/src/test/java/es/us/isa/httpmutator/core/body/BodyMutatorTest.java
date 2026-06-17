@@ -298,13 +298,16 @@ public class BodyMutatorTest {
     public void getAllMutants() {
         activateAllMutators();
         List<Mutant> mutants = jsonMutator.getAllMutants(jsonNode);
-        assertEquals("The number of generated mutants does not match", 192, mutants.size());
+        assertMutantCount("getAllMutants(JsonNode)", 192, mutants);
     }
 
     @Test
     public void getAllMutantsAsString() {
         activateAllMutators();
         List<String> mutants = jsonMutator.getAllMutants(jsonString);
+        if (mutants.size() != 192) {
+            printStringMutantDiagnostics("getAllMutants(String)", 192, mutants.size());
+        }
         assertEquals("The number of generated mutants does not match", 192, mutants.size());
     }
 
@@ -340,5 +343,53 @@ public class BodyMutatorTest {
         jsonMutator.setProperty("operator.value.null.enabled", "true");
         jsonMutator.setProperty("operator.object.enabled", "true");
         jsonMutator.setProperty("operator.array.enabled", "true");
+    }
+
+    private void assertMutantCount(String label, int expected, List<Mutant> mutants) {
+        if (mutants.size() != expected) {
+            printMutantDiagnostics(label, expected, mutants.size(), mutants);
+        }
+        assertEquals("The number of generated mutants does not match", expected, mutants.size());
+    }
+
+    private void printStringMutantDiagnostics(String label, int expected, int actual) {
+        System.err.println();
+        System.err.println("==== BodyMutatorTest mutation count mismatch ====");
+        System.err.println("Test: " + label);
+        System.err.println("Expected mutants: " + expected);
+        System.err.println("Actual mutants: " + actual);
+        System.err.println("The String API returns only mutated JSON strings, so this diagnostic run uses the path-based API");
+        System.err.println("to print the field, mutator, and operator for each generated mutation.");
+
+        final int[] index = {1};
+        jsonMutator.getAllMutants(jsonString, 1, group -> {
+            for (Mutant mutant : group.getMutants()) {
+                printMutant(index[0]++, mutant);
+            }
+        });
+        System.err.println("==== End BodyMutatorTest mutation diagnostics ====");
+        System.err.println();
+    }
+
+    private void printMutantDiagnostics(String label, int expected, int actual, List<Mutant> mutants) {
+        System.err.println();
+        System.err.println("==== BodyMutatorTest mutation count mismatch ====");
+        System.err.println("Test: " + label);
+        System.err.println("Expected mutants: " + expected);
+        System.err.println("Actual mutants: " + actual);
+        for (int i = 0; i < mutants.size(); i++) {
+            printMutant(i + 1, mutants.get(i));
+        }
+        System.err.println("==== End BodyMutatorTest mutation diagnostics ====");
+        System.err.println();
+    }
+
+    private void printMutant(int index, Mutant mutant) {
+        System.err.println(String.format(
+                "%03d field=%s mutator=%s operator=%s",
+                index,
+                mutant.getOriginalJsonPath(),
+                mutant.getMutatorClassName(),
+                mutant.getOperatorClassName()));
     }
 }

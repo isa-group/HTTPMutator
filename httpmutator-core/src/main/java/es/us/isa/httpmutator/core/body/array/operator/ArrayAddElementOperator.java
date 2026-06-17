@@ -1,7 +1,5 @@
 package es.us.isa.httpmutator.core.body.array.operator;
 
-import java.util.Random;
-
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -61,18 +59,18 @@ public class ArrayAddElementOperator extends AbstractOperator {
     protected Object doMutate(Object arrayNodeObject) {
         ArrayNode arrayNode = (ArrayNode)arrayNodeObject;
         float randomValue;
-        int addedProperties = rand1.nextInt(minAddedElements, maxAddedElements); // Add between min and max elements to array
+        int addedProperties = RandomUtils.nextIntInclusive(minAddedElements, maxAddedElements); // Add between min and max elements to array
 
         for (int i=1; i<=addedProperties; i++) {
-            randomValue = rand2.nextFloat();
+            randomValue = RandomUtils.nextFloat();
             if (randomValue <= 1f/7) {
-                arrayNode.add(rand1.nextLong(minLong, maxLong));
+                arrayNode.add(RandomUtils.nextLongInclusive(minLong, maxLong));
             } else if (randomValue <= 2f/7) {
-                arrayNode.add(rand1.nextUniform(minDouble, maxDouble));
+                arrayNode.add(RandomUtils.nextUniform(minDouble, maxDouble));
             } else if (randomValue <= 3f/7) {
-                arrayNode.add(rand2.nextBoolean());
+                arrayNode.add(RandomUtils.nextBoolean());
             } else if (randomValue <= 4f/7) {
-                arrayNode.add(RandomStringUtils.random(rand1.nextInt(minLength, maxLength), 0, 0, true, true, null, RandomUtils.getRandom()));
+                arrayNode.add(RandomStringUtils.random(RandomUtils.nextIntInclusive(minLength, maxLength), 0, 0, true, true, null, RandomUtils.getRandom()));
             } else if (randomValue <= 5f/7) {
                 arrayNode.addNull();
             } else if (randomValue <= 6f/7) {

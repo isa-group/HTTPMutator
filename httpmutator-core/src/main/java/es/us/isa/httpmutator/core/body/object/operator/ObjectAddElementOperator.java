@@ -1,7 +1,5 @@
 package es.us.isa.httpmutator.core.body.object.operator;
 
-import java.util.Random;
-
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -61,18 +59,18 @@ public class ObjectAddElementOperator extends AbstractOperator {
     protected Object doMutate(Object objectNodeObject) {
         ObjectNode objectNode = (ObjectNode)objectNodeObject;
         float randomValue;
-        int addedProperties = rand1.nextInt(minAddedProperties, maxAddedProperties); // Add between min and max properties to object
+        int addedProperties = RandomUtils.nextIntInclusive(minAddedProperties, maxAddedProperties); // Add between min and max properties to object
 
         for (int i=1; i<=addedProperties; i++) {
-            randomValue = rand2.nextFloat();
+            randomValue = RandomUtils.nextFloat();
             if (randomValue <= 1f/7) {
-                objectNode.put("randomLong"+i, rand1.nextLong(minLong, maxLong));
+                objectNode.put("randomLong"+i, RandomUtils.nextLongInclusive(minLong, maxLong));
             } else if (randomValue <= 2f/7) {
-                objectNode.put("randomFloat"+i, rand1.nextUniform(minDouble, maxDouble));
+                objectNode.put("randomFloat"+i, RandomUtils.nextUniform(minDouble, maxDouble));
             } else if (randomValue <= 3f/7) {
-                objectNode.put("randomBoolean"+i, rand2.nextBoolean());
+                objectNode.put("randomBoolean"+i, RandomUtils.nextBoolean());
             } else if (randomValue <= 4f/7) {
-                objectNode.put("randomString"+i, RandomStringUtils.random(rand1.nextInt(minLength, maxLength), 0, 0, true, true, null, RandomUtils.getRandom()));
+                objectNode.put("randomString"+i, RandomStringUtils.random(RandomUtils.nextIntInclusive(minLength, maxLength), 0, 0, true, true, null, RandomUtils.getRandom()));
             } else if (randomValue <= 5f/7) {
                 objectNode.putNull("randomNull"+i);
             } else if (randomValue <= 6f/7) {

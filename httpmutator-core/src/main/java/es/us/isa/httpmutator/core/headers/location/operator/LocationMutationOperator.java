@@ -6,6 +6,7 @@ import java.net.URI;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 public class LocationMutationOperator extends AbstractOperator {
 
@@ -18,7 +19,7 @@ public class LocationMutationOperator extends AbstractOperator {
     protected Object doMutate(Object location) {
         String locationString = (String) location;
         URI originalUri = URI.create(locationString);
-        String newPath = originalUri.getPath() + "/" + System.currentTimeMillis();
+        String newPath = originalUri.getPath() + "/" + Long.toUnsignedString(RandomUtils.nextLong());
         return URI.create(
             originalUri.getScheme() + "://" +
             originalUri.getAuthority() +

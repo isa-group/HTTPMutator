@@ -2,6 +2,7 @@ package es.us.isa.httpmutator.core.body.value.double0.operator;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 /**
@@ -23,6 +24,6 @@ public class DoubleReplacementOperator extends AbstractOperator {
 
     @Override
     protected Object doMutate(Object longObject) {
-        return rand1.nextUniform(minDouble, maxDouble);
+        return RandomUtils.nextUniform(minDouble, maxDouble);
     }
 }

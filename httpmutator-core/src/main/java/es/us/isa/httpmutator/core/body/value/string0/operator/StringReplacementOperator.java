@@ -1,7 +1,5 @@
 package es.us.isa.httpmutator.core.body.value.string0.operator;
 
-import java.util.Random;
-
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -30,9 +28,9 @@ public class StringReplacementOperator extends AbstractOperator {
     @Override
     protected Object doMutate(Object stringObject) {
         if (Boolean.parseBoolean(readProperty("operator.value.string.includeAscii"))) {
-            return RandomStringUtils.random(RandomUtils.nextInt(minLength, maxLength), 32, 127, false, false, null, RandomUtils.getRandom()); 
+            return RandomStringUtils.random(RandomUtils.nextIntInclusive(minLength, maxLength), 32, 127, false, false, null, RandomUtils.getRandom());
         }else {
-            return RandomStringUtils.random(rand1.nextInt(minLength, maxLength),
+            return RandomStringUtils.random(RandomUtils.nextIntInclusive(minLength, maxLength),
                     0, 0,
                     Boolean.parseBoolean(readProperty("operator.value.string.includeLetters")),
                     Boolean.parseBoolean(readProperty("operator.value.string.includeNumbers")),

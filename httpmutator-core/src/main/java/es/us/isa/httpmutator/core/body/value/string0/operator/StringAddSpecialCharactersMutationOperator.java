@@ -6,6 +6,7 @@ import java.util.List;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 /**
@@ -37,13 +38,13 @@ public class StringAddSpecialCharactersMutationOperator extends AbstractOperator
          } else {
              // RandomDataGenerator.nextInt(lower, upper) is inclusive on both ends
              // So to insert safely, upper bound should be `length` (not length-1)
-             charPosition = rand1.nextInt(0, length);
+             charPosition = RandomUtils.nextIntInclusive(0, length);
          }
 
-         int posRandomCharacter = rand1.nextInt(0, SPECIAL_CHARACTERS.size() - 1);
+         int posRandomCharacter = RandomUtils.nextInt(0, SPECIAL_CHARACTERS.size());
 
          sb.insert(charPosition, SPECIAL_CHARACTERS.get(posRandomCharacter));
 
          return sb.toString();
      }
- } 
+ }

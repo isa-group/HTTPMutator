@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import es.us.isa.httpmutator.core.RandomManager;
 import es.us.isa.httpmutator.core.model.Mutant;
 import es.us.isa.httpmutator.core.model.MutantGroup;
 import es.us.isa.httpmutator.core.util.RandomUtils;

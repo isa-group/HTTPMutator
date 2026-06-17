@@ -13,6 +13,7 @@ import static es.us.isa.httpmutator.core.util.OperatorNames.EMPTY;
 import static es.us.isa.httpmutator.core.util.OperatorNames.REMOVE_ELEMENT;
 import static es.us.isa.httpmutator.core.util.OperatorNames.REMOVE_OBJECT_ELEMENT;
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 
 /**
  * Superclass for object and array mutators. Both share common functionalities,
@@ -122,7 +123,7 @@ public abstract class AbstractObjectOrArrayMutator extends AbstractMutator {
     protected boolean mutate(JsonNode jsonNode, String propertyName, Integer index) {
         boolean isObj = index==null; // If index==null, jsonNode is an object, otherwise it is an array
         Boolean elementWasObj = null; // Whether the elementToMutate was an object in the previous iteration or not
-        int nMutations = rand1.nextInt(minMutations, maxMutations);
+        int nMutations = RandomUtils.nextIntInclusive(minMutations, maxMutations);
         boolean wasMutated = false;
         for (int i=0; i<nMutations; i++) {
             JsonNode elementToMutate = isObj ? jsonNode.get(propertyName) : jsonNode.get(index);
@@ -172,7 +173,7 @@ public abstract class AbstractObjectOrArrayMutator extends AbstractMutator {
      */
     public JsonNode getMutatedNode(JsonNode jsonNode) {
         resetFirstLevelOperators(); // Use only first level operators
-        int nMutations = rand1.nextInt(minMutations, maxMutations);
+        int nMutations = RandomUtils.nextIntInclusive(minMutations, maxMutations);
         for (int i=0; i<nMutations; i++) {
             if (shouldApplyMutation()) {
                 // Mutate element by randomly choosing one mutation operator among 'operators' and applying the mutation:

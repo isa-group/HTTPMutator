@@ -2,6 +2,7 @@ package es.us.isa.httpmutator.core.body.value.long0.operator;
 
 import es.us.isa.httpmutator.core.AbstractOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.RandomUtils;
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 /**
@@ -22,7 +23,7 @@ public class LongMutationOperator extends AbstractOperator {
 
     protected Object doMutate(Object longObject) {
         Long longValue = (Long)longObject;
-        float randomValue = rand2.nextFloat();
+        float randomValue = RandomUtils.nextFloat();
 
         if (randomValue <= 1f/2) { // Mutation: subtract delta
             return longValue + delta;
