@@ -54,9 +54,9 @@ public class HttpMutator implements AutoCloseable {
     }
 
     public HttpMutator(long randomSeed) {
-        this.engine = new HttpMutatorEngine();
         this.randomSeed = randomSeed;
         RandomUtils.setSeed(randomSeed);
+        this.engine = new HttpMutatorEngine();
     }
 
     public HttpMutator withMutationStrategy(MutationStrategy strategy) {

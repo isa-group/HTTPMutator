@@ -3,7 +3,23 @@ package es.us.isa.httpmutator.core.util;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 public class RandomUtilsTest {
+
+    @Test
+    public void defaultSeedIs42BeforeExplicitSeeding() throws Exception {
+        URL[] classpath = toUrls(System.getProperty("java.class.path").split(File.pathSeparator));
+
+        try (URLClassLoader loader = new URLClassLoader(classpath, null)) {
+            Class<?> randomUtilsClass = Class.forName(RandomUtils.class.getName(), true, loader);
+            Object seed = randomUtilsClass.getMethod("getSeed").invoke(null);
+
+            Assert.assertEquals(42L, seed);
+        }
+    }
 
     @Test
     public void nextIntInclusiveReturnsOnlyValueWhenBoundsMatch() {
@@ -60,5 +76,13 @@ public class RandomUtilsTest {
     @Test(expected = IllegalArgumentException.class)
     public void nextLongInclusiveRejectsInvertedBounds() {
         RandomUtils.nextLongInclusive(2L, 1L);
+    }
+
+    private static URL[] toUrls(String[] classpathEntries) throws Exception {
+        URL[] urls = new URL[classpathEntries.length];
+        for (int i = 0; i < classpathEntries.length; i++) {
+            urls[i] = new File(classpathEntries[i]).toURI().toURL();
+        }
+        return urls;
     }
 }

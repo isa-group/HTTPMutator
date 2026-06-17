@@ -13,9 +13,10 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author lixin
  */
 public class RandomUtils {
-    private static final AtomicLong GLOBAL_SEED = new AtomicLong(-1L);
-    private static volatile SplittableRandom RNG = new SplittableRandom();
-    private static volatile Random RANDOM = new Random();
+    private static final long DEFAULT_SEED = 42L;
+    private static final AtomicLong GLOBAL_SEED = new AtomicLong(DEFAULT_SEED);
+    private static volatile SplittableRandom RNG = new SplittableRandom(DEFAULT_SEED);
+    private static volatile Random RANDOM = new Random(DEFAULT_SEED);
 
 
     private RandomUtils() {
