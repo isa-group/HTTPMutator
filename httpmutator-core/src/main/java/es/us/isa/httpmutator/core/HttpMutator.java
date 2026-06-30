@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -129,6 +130,14 @@ public class HttpMutator implements AutoCloseable {
      * - invoke extraHandler (per context)
      */
     private void processExchange(HttpExchange exchange, Consumer<StandardHttpResponse> perMutantConsumer) {
+        processExchangeWithMetadata(exchange, perMutantConsumer == null ? null : (mutated, mutant) -> perMutantConsumer.accept(mutated));
+    }
+
+    /**
+     * Core pipeline variant that exposes both the mutated response and the
+     * Mutant metadata to integration layers that need per-mutant reporting.
+     */
+    private void processExchangeWithMetadata(HttpExchange exchange, BiConsumer<StandardHttpResponse, Mutant> perMutantConsumer) {
 
         Objects.requireNonNull(exchange, "exchange must not be null");
         ensureStrategyConfigured();
@@ -156,7 +165,7 @@ public class HttpMutator implements AutoCloseable {
                     }
 
                     if (perMutantConsumer != null) {
-                        perMutantConsumer.accept(mutated);
+                        perMutantConsumer.accept(mutated, mutant);
                     }
                 }
             });
@@ -275,6 +284,22 @@ public class HttpMutator implements AutoCloseable {
     }
 
     public void mutate(StandardHttpResponse original, Consumer<StandardHttpResponse> consumer) {
+        mutate(original, "", consumer);
+    }
+
+    public void mutate(StandardHttpResponse original, String label, BiConsumer<StandardHttpResponse, Mutant> consumer) {
+
+        Objects.requireNonNull(original, "original must not be null");
+        Objects.requireNonNull(consumer, "consumer must not be null");
+        ensureStrategyConfigured();
+
+        String id = label == null || label.isEmpty() ? "in-memory" : label;
+        HttpExchange exchange = new HttpExchange(null, original, id);
+
+        processExchangeWithMetadata(exchange, consumer);
+    }
+
+    public void mutate(StandardHttpResponse original, BiConsumer<StandardHttpResponse, Mutant> consumer) {
         mutate(original, "", consumer);
     }
 
