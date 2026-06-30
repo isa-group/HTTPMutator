@@ -8,12 +8,14 @@ import es.us.isa.httpmutator.core.model.StandardHttpResponse;
 import es.us.isa.httpmutator.core.reader.HttpExchangeReader;
 import es.us.isa.httpmutator.core.reporter.MutantReporter;
 import es.us.isa.httpmutator.core.strategy.MutationStrategy;
+import es.us.isa.httpmutator.core.util.PropertyManager;
 import es.us.isa.httpmutator.core.util.RandomUtils;
 import es.us.isa.httpmutator.core.writer.MutantWriter;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +57,17 @@ public class HttpMutator implements AutoCloseable {
     }
 
     public HttpMutator(long randomSeed) {
+        this.randomSeed = randomSeed;
+        RandomUtils.setSeed(randomSeed);
+        this.engine = new HttpMutatorEngine();
+    }
+
+    public HttpMutator(Path propertiesFile) {
+        this(42L, propertiesFile);
+    }
+
+    public HttpMutator(long randomSeed, Path propertiesFile) {
+        PropertyManager.loadProperties(propertiesFile);
         this.randomSeed = randomSeed;
         RandomUtils.setSeed(randomSeed);
         this.engine = new HttpMutatorEngine();

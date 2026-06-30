@@ -747,7 +747,7 @@ public class BodyMutator {
     }
 
     /**
-     * @param propertyName  Name of the property in the json-mutation.properties
+     * @param propertyName  Name of the property in the http-mutation.properties
      *                      file, e.g., "operator.value.double.enabled"
      * @param propertyValue Value to set that property with
      */
@@ -757,7 +757,7 @@ public class BodyMutator {
     }
 
     /**
-     * Resets properties to the ones defined in json-mutation.properties
+     * Resets properties to the ones defined in http-mutation.properties
      */
     public void resetProperties() {
         PropertyManager.resetProperties();

@@ -84,6 +84,8 @@ This document explains how each mutation operator is applied, what it can act on
 - **Operator**: classes that extend `AbstractOperator` and implement `doMutate(...)`. These live under `.../operator/` packages.
 - **Flow**: a mutator scans one recorded HTTP response (status, headers, JSON body) and picks the applicable operator(s) for each target part; each operator performs one small change to produce a mutant variant, which is then collected and exported as JSONL (optionally .jsonl.zst shards), HAR, or kept in memory.
 
+Each operator can be enabled or disabled independently through `http-mutation.properties`. See [Operator Configuration](operator-configuration.md) for the property corresponding to each operator and for the REST and GraphQL example configurations.
+
 ## Status Code Mutation Operators
 ### R2XX - Replacement with status code 2XX
 Replaces the status code with a 2XX success code to simulate incorrectly successful responses (code uses `{200, 201, 202, 204}` and does not include 202).
@@ -572,7 +574,7 @@ public class ExampleOperator extends AbstractOperator {
 ## Step 2. Register the operator in a mutator
 
 Mutators select mutation targets and apply mutation operators using an operator map.
-An operator becomes available to a mutator after it is inserted into that map via `getOperators().put(...)`.
+An operator becomes available to a mutator after it is conditionally registered through `addOperatorIfEnabled(...)`.
 Registration is typically performed by extending an existing mutator such as StringMutator.
 
 Minimal mutator integration example:
@@ -583,7 +585,10 @@ import es.us.isa.httpmutator.core.util.OperatorNames;
 public class CustomStringMutator extends StringMutator {
     public CustomStringMutator() {
         super();
-        getOperators().put(OperatorNames.REPLACE, new ExampleOperator());
+        addOperatorIfEnabled(
+                "operator.value.string.example.enabled",
+                "example",
+                ExampleOperator::new);
     }
 }
 ```

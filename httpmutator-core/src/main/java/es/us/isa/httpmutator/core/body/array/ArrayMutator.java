@@ -25,12 +25,30 @@ public class ArrayMutator extends AbstractObjectOrArrayMutator {
 
     public void resetOperators() {
         operators.clear();
-        operators.put(OperatorNames.REMOVE_ELEMENT, new ArrayRemoveElementOperator());
-        operators.put(OperatorNames.EMPTY, new ArrayEmptyOperator());
-        operators.put(OperatorNames.ADD_ELEMENT, new ArrayAddElementOperator());
-        operators.put(OperatorNames.DISORDER_ELEMENTS, new ArrayDisorderElementsOperator());
-        operators.put(OperatorNames.NULL, new NullOperator(ArrayNode.class));
-        operators.put(OperatorNames.CHANGE_TYPE, new ChangeTypeOperator(ArrayNode.class));
+        addOperatorIfEnabled(
+                "operator.array.removeElement.enabled",
+                OperatorNames.REMOVE_ELEMENT,
+                ArrayRemoveElementOperator::new);
+        addOperatorIfEnabled(
+                "operator.array.empty.enabled",
+                OperatorNames.EMPTY,
+                ArrayEmptyOperator::new);
+        addOperatorIfEnabled(
+                "operator.array.addElement.enabled",
+                OperatorNames.ADD_ELEMENT,
+                ArrayAddElementOperator::new);
+        addOperatorIfEnabled(
+                "operator.array.disorderElements.enabled",
+                OperatorNames.DISORDER_ELEMENTS,
+                ArrayDisorderElementsOperator::new);
+        addOperatorIfEnabled(
+                "operator.array.null.enabled",
+                OperatorNames.NULL,
+                () -> new NullOperator(ArrayNode.class));
+        addOperatorIfEnabled(
+                "operator.array.changeType.enabled",
+                OperatorNames.CHANGE_TYPE,
+                () -> new ChangeTypeOperator(ArrayNode.class));
     }
 
     public void resetFirstLevelOperators() {

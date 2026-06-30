@@ -106,13 +106,27 @@ Integrations can implement `BidirectionalConverter<T>` to map client responses t
 
 ## Configuration overrides
 
-Mutation toggles live in `json-mutation.properties`. You can override them programmatically:
+Mutation toggles live in `http-mutation.properties`. Category and individual operator settings can be overridden programmatically:
 
 ```java
 import es.us.isa.httpmutator.core.util.PropertyManager;
 
 PropertyManager.setProperty("operator.body.enabled", "true");
+PropertyManager.setProperty("operator.value.string.boundary.enabled", "false");
 PropertyManager.setProperty("operator.value.string.length.max", "256");
 ```
 
 Call `PropertyManager.resetProperties()` to restore defaults.
+
+For file-based overrides, pass any properties file to `PropertyManager.loadProperties(path)` or construct `HttpMutator` with that path. The file is overlaid on the defaults, so it may contain only changed keys.
+
+When registering a built-in-style operator from an `AbstractMutator` subclass, use `addOperatorIfEnabled(...)` so the operator follows the same configuration rules:
+
+```java
+addOperatorIfEnabled(
+        "operator.value.string.example.enabled",
+        "example",
+        ExampleOperator::new);
+```
+
+Missing operator switches default to enabled for backward compatibility. Explicit values must be `true` or `false`.

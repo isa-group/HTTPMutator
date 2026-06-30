@@ -10,9 +10,15 @@ import es.us.isa.httpmutator.core.util.OperatorNames;
 public class CharsetMutator extends AbstractMutator {
     public CharsetMutator() {
         super();
-        prob = Float.parseFloat(readProperty("operator.sc.prob"));
-        operators.put(OperatorNames.REPLACE, new CharsetReplacementOperator());
-        operators.put(OperatorNames.NULL, new NullOperator(CharsetMutator.class));
+        prob = Float.parseFloat(readProperty("operator.header.charset.prob"));
+        addOperatorIfEnabled(
+                "operator.header.charset.replace.enabled",
+                OperatorNames.REPLACE,
+                CharsetReplacementOperator::new);
+        addOperatorIfEnabled(
+                "operator.header.charset.null.enabled",
+                OperatorNames.NULL,
+                () -> new NullOperator(CharsetMutator.class));
     }
 
 }

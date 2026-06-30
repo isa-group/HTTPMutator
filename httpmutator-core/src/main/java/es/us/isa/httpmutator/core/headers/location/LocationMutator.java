@@ -11,7 +11,13 @@ public class LocationMutator extends AbstractMutator {
     public LocationMutator() {
         super();
         prob = Float.parseFloat(readProperty("operator.header.location.prob"));
-        operators.put(OperatorNames.MUTATE, new LocationMutationOperator());
-        operators.put(OperatorNames.NULL, new NullOperator(LocationMutator.class));
+        addOperatorIfEnabled(
+                "operator.header.location.mutate.enabled",
+                OperatorNames.MUTATE,
+                LocationMutationOperator::new);
+        addOperatorIfEnabled(
+                "operator.header.location.null.enabled",
+                OperatorNames.NULL,
+                () -> new NullOperator(LocationMutator.class));
     }
 }

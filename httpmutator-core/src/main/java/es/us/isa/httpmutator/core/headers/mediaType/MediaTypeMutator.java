@@ -10,7 +10,13 @@ public class MediaTypeMutator extends AbstractMutator {
     public MediaTypeMutator() {
         super();
         prob = Float.parseFloat(readProperty("operator.header.mediaType.prob"));
-        operators.put(OperatorNames.REPLACE, new MediaTypeReplacementOperator());
-        operators.put(OperatorNames.NULL, new NullOperator(MediaTypeMutator.class));
+        addOperatorIfEnabled(
+                "operator.header.mediaType.replace.enabled",
+                OperatorNames.REPLACE,
+                MediaTypeReplacementOperator::new);
+        addOperatorIfEnabled(
+                "operator.header.mediaType.null.enabled",
+                OperatorNames.NULL,
+                () -> new NullOperator(MediaTypeMutator.class));
     }
 }

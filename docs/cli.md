@@ -28,6 +28,7 @@ There are no subcommands; all flags are passed to the main entry point.
 - `-o, --output <dir>` (optional, default: `hm-output`) Output directory.
 - `-s, --strategy <name>` (optional, default: `random`) Mutation strategy. Supported values: `random`, `exhaustive`, or `all` (alias for `exhaustive`).
 - `--seed <long>` (optional, default: `42`) Random seed for the mutation strategy.
+- `--properties <file>` (optional) Properties override file. Missing keys are read from the default configuration.
 - `--includeMeta` (optional, flag) Include mutation metadata fields in JSONL output.
 - `--writeJsonl` (optional, flag) Write JSONL output. If no output flags are provided, JSONL output is enabled by default.
 - `--writeHar` (optional, flag) Write HAR output.
@@ -46,7 +47,11 @@ If you pass both `--writeJsonl` and `--writeHar`, the CLI writes both outputs.
 
 ## Configuration
 
-The CLI uses the library defaults from `httpmutator-core/src/main/resources/json-mutation.properties`. There are no CLI flags for overriding those properties in the current implementation.
+The CLI uses the operator selection and mutation ranges from `httpmutator-core/src/main/resources/http-mutation.properties` by default. Pass `--properties <file>` to overlay a custom properties file on top of those defaults.
+
+REST and GraphQL template configurations are available as `rest-mutation.properties` and `graphql-mutation.properties` in the core resources. These files control operator applicability only; `--seed` and `--strategy` remain independent CLI options.
+
+See [operator-configuration.md](operator-configuration.md) for the full list of operator switches.
 
 ## Examples
 
@@ -78,4 +83,13 @@ java -jar httpmutator-core/target/httpmutator.jar \
   --writeJsonl \
   --writeHar \
   --reporter csv
+```
+
+Use a custom properties file:
+
+```bash
+java -jar httpmutator-core/target/httpmutator.jar \
+  -i httpmutator-core/src/test/resources/httpmutatorInput.jsonl \
+  -o hm-output \
+  --properties graphql-mutation.properties
 ```

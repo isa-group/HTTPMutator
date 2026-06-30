@@ -18,8 +18,17 @@ public class BooleanMutator extends AbstractMutator {
     public BooleanMutator() {
         super();
         prob = Float.parseFloat(readProperty("operator.value.boolean.prob"));
-        operators.put(OperatorNames.MUTATE, new BooleanMutationOperator());
-        operators.put(OperatorNames.NULL, new NullOperator(Boolean.class));
-        operators.put(OperatorNames.CHANGE_TYPE, new ChangeTypeOperator(Boolean.class));
+        addOperatorIfEnabled(
+                "operator.value.boolean.mutate.enabled",
+                OperatorNames.MUTATE,
+                BooleanMutationOperator::new);
+        addOperatorIfEnabled(
+                "operator.value.boolean.null.enabled",
+                OperatorNames.NULL,
+                () -> new NullOperator(Boolean.class));
+        addOperatorIfEnabled(
+                "operator.value.boolean.changeType.enabled",
+                OperatorNames.CHANGE_TYPE,
+                () -> new ChangeTypeOperator(Boolean.class));
     }
 }

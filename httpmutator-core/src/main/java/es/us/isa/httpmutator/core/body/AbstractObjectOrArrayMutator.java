@@ -138,6 +138,9 @@ public abstract class AbstractObjectOrArrayMutator extends AbstractMutator {
                 if (shouldApplyMutation()) {
                     // Mutate element by randomly choosing one mutation operator among 'operators' and applying the mutation:
                     String operator = getOperator();
+                    if (operator == null) {
+                        break;
+                    }
                     // If node is empty and an operator that will make no changes is selected
                     if (elementToMutate.size() == 0 && (operator.equals(REMOVE_ELEMENT)  || operator.equals(REMOVE_OBJECT_ELEMENT) || operator.equals(DISORDER_ELEMENTS) || operator.equals(EMPTY))) {
                         operators.remove(REMOVE_ELEMENT); // Discard all those operators
@@ -178,6 +181,9 @@ public abstract class AbstractObjectOrArrayMutator extends AbstractMutator {
             if (shouldApplyMutation()) {
                 // Mutate element by randomly choosing one mutation operator among 'operators' and applying the mutation:
                 String operator = getOperator();
+                if (operator == null) {
+                    break;
+                }
 
                 // If node is empty and an operator that will make no changes is selected
                 if (jsonNode.size() == 0 && (operator.equals(REMOVE_ELEMENT) || operator.equals(REMOVE_OBJECT_ELEMENT) || operator.equals(DISORDER_ELEMENTS) || operator.equals(EMPTY))) {
