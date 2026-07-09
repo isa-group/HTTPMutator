@@ -109,6 +109,7 @@ Common adjustments:
 - Enable/disable mutation categories: status code, headers, and JSON body.
 - Enable/disable individual operators, such as `operator.sc.replaceWith40x.enabled=false`.
 - Tune numeric and string ranges used by value-level operators (e.g., min/max length, min/max numeric values).
+- Ignore selected JSON body paths with `mutation.body.ignore.paths=Body/id,/user/token`.
 
 Ready-to-use template configurations are provided in `httpmutator-core/src/main/resources`:
 - `rest-mutation.properties`: all currently supported operators enabled.

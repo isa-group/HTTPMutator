@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -112,6 +113,22 @@ public class HttpMutator implements AutoCloseable {
         this.randomSeed = randomSeed;
         RandomUtils.setSeed(randomSeed);
         return this;
+    }
+
+    public HttpMutator withIgnoredBodyPaths(Collection<String> paths) {
+        engine.setIgnoredBodyPaths(paths);
+        return this;
+    }
+
+    public HttpMutator addIgnoredBodyPath(String path) {
+        List<String> paths = new ArrayList<>(engine.getIgnoredBodyPaths());
+        paths.add(path);
+        engine.setIgnoredBodyPaths(paths);
+        return this;
+    }
+
+    public List<String> getIgnoredBodyPaths() {
+        return engine.getIgnoredBodyPaths();
     }
 
     public long getRandomSeed() {

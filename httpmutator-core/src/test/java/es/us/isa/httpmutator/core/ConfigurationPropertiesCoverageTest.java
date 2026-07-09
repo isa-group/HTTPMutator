@@ -16,6 +16,7 @@ public class ConfigurationPropertiesCoverageTest {
             "operator.sc.enabled",
             "operator.header.enabled",
             "operator.body.enabled",
+            "mutation.body.ignore.paths",
 
             "operator.value.long.enabled",
             "operator.value.long.min",

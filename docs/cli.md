@@ -51,6 +51,14 @@ The CLI uses the operator selection and mutation ranges from `httpmutator-core/s
 
 REST and GraphQL template configurations are available as `rest-mutation.properties` and `graphql-mutation.properties` in the core resources. These files control operator applicability only; `--seed` and `--strategy` remain independent CLI options.
 
+To skip body fields during mutation, put a comma-separated list in a properties file and pass it with `--properties`:
+
+```properties
+mutation.body.ignore.paths=Body/id, /user/token, items/0/id
+```
+
+Paths are subtree matches. For example, `Body/user` skips `Body/user` and `Body/user/...` body mutants while status-code and header mutants remain enabled.
+
 See [operator-configuration.md](operator-configuration.md) for the full list of operator switches.
 
 ## Examples

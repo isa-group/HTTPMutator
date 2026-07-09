@@ -7,6 +7,23 @@ Random seed and mutation strategy are intentionally separate from this file:
 - Java API: `new HttpMutator(seed)` and `withMutationStrategy(...)`
 - CLI: `--seed` and `--strategy random|exhaustive`
 
+## Ignoring Body Paths
+
+Use `mutation.body.ignore.paths` to prevent path-based JSON body mutation for selected fields:
+
+```properties
+mutation.body.ignore.paths=Body/id, /user/token, items/0/id
+```
+
+Paths are normalized to the existing mutation metadata style (`Body/...`). For example, `Body/user`, `/user`, and `user` all refer to `Body/user`. Matching is subtree-based: ignoring `Body/user` skips mutants for `Body/user` and all descendants such as `Body/user/id`. Ignoring `Body` disables body mutants only; status-code and header mutants still run.
+
+The same behavior is also available through the Java API:
+
+```java
+HttpMutator mutator = new HttpMutator()
+        .withIgnoredBodyPaths(java.util.Arrays.asList("Body/id", "/user/token"));
+```
+
 ## Operator switches
 
 | Paper operator | Implementation scope | Enabled property |
