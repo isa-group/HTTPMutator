@@ -82,10 +82,12 @@ public final class HttpMutatorCli {
         MutationStrategy strategy = createStrategy(config);
 
         try (Reader in = Files.newBufferedReader(input, StandardCharsets.UTF_8);
-             HttpMutator mutator = new HttpMutator(config.randomSeed)
-                     .withMutationStrategy(strategy)
-                     .withWriters(writers)
-                     .withReporters(reporters)) {
+             HttpMutator mutator = (config.propertiesFile == null
+                     ? new HttpMutator(config.randomSeed)
+                     : new HttpMutator(config.randomSeed, config.propertiesFile))
+	                     .withMutationStrategy(strategy)
+	                     .withWriters(writers)
+	                     .withReporters(reporters)) {
 
             mutator.mutateStream(exchangeReader, in);
         }
@@ -207,6 +209,7 @@ public final class HttpMutatorCli {
         final String baseName;
         final boolean includeMeta;
         final long randomSeed;
+        final Path propertiesFile;
         final List<String> reporterNames;
 
         final StrategyName strategy;
@@ -221,6 +224,7 @@ public final class HttpMutatorCli {
                           String baseName,
                           boolean includeMeta,
                           long randomSeed,
+                          Path propertiesFile,
                           List<String> reporterNames,
                           StrategyName strategy,
                           boolean writeHar,
@@ -231,6 +235,7 @@ public final class HttpMutatorCli {
             this.baseName = baseName;
             this.includeMeta = includeMeta;
             this.randomSeed = randomSeed;
+            this.propertiesFile = propertiesFile;
             this.reporterNames = reporterNames;
             this.strategy = strategy;
             this.writeHar = writeHar;
@@ -249,6 +254,7 @@ public final class HttpMutatorCli {
             List<String> reporterNames = new ArrayList<>();
             boolean includeMeta = false;
             long randomSeed = 42L;
+            Path propertiesFile = null;
             StrategyName strategy = StrategyName.RANDOM;
 
             // Output flags (default selection implemented in createWriters)
@@ -297,6 +303,16 @@ public final class HttpMutatorCli {
                             throw new IllegalArgumentException("--seed requires a long value");
                         }
                         randomSeed = Long.parseLong(args[++i]);
+                        break;
+
+                    case "--properties":
+                        if (i + 1 >= args.length) {
+                            throw new IllegalArgumentException("--properties requires a file path");
+                        }
+                        propertiesFile = Paths.get(args[++i]);
+                        if (!Files.isRegularFile(propertiesFile) || !Files.isReadable(propertiesFile)) {
+                            throw new IllegalArgumentException("--properties file is not readable: " + propertiesFile);
+                        }
                         break;
 
                     case "--strategy":
@@ -358,7 +374,7 @@ public final class HttpMutatorCli {
 
             return new CliConfig(
                     input, format, outputDir, baseName,
-                    includeMeta, randomSeed, reporterNames, strategy,
+                    includeMeta, randomSeed, propertiesFile, reporterNames, strategy,
                     writeHar, writeJsonl
             );
         }
@@ -398,6 +414,7 @@ public final class HttpMutatorCli {
         System.err.println("        Supported: exhaustive(all), random");
         System.err.println("      --includeMeta         Include mutation metadata fields in JSONL output");
         System.err.println("      --seed <long>         Random seed (default: 42)");
+        System.err.println("      --properties <file>   Properties override file");
         System.err.println("      --writeJsonl          Write JSONL output (default if no output flags are specified)");
         System.err.println("      --writeHar            Write HAR output");
         System.err.println("  -h, --help                Show this help and exit");

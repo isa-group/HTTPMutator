@@ -102,20 +102,40 @@ filter.runAllMutations();
 For setup details and report outputs, see [docs/restassured-integration.md](docs/restassured-integration.md).
 
 ## Configuration
-HttpMutator is configurable: you can enable/disable mutation categories and tune value ranges used by certain operators.
-Defaults are loaded from `httpmutator-core/src/main/resources/json-mutation.properties` via `PropertyManager`.
+HttpMutator is configurable: you can enable or disable mutation categories and individual operators, and tune value ranges used by certain operators.
+Defaults are loaded from `httpmutator-core/src/main/resources/http-mutation.properties` via `PropertyManager`.
 
 Common adjustments:
 - Enable/disable mutation categories: status code, headers, and JSON body.
+- Enable/disable individual operators, such as `operator.sc.replaceWith40x.enabled=false`.
 - Tune numeric and string ranges used by value-level operators (e.g., min/max length, min/max numeric values).
-- Enable/disable specific header-related mutations (e.g., media type, charset).
+- Ignore selected JSON body paths with `mutation.body.ignore.paths=Body/id,/user/token`.
+
+Ready-to-use template configurations are provided in `httpmutator-core/src/main/resources`:
+- `rest-mutation.properties`: all currently supported operators enabled.
+- `graphql-mutation.properties`: status-code operators disabled while header and JSON payload operators remain enabled.
+
+Pass any properties file through the Java API or CLI. The file is loaded as an override on top of the default `http-mutation.properties`, so custom files may contain only changed keys. Seed and mutation strategy remain separate runtime settings configured through the Java API or CLI.
 
 Programmatic override:
 ```java
 import es.us.isa.httpmutator.core.util.PropertyManager;
 
 PropertyManager.setProperty("operator.body.enabled", "true");
+PropertyManager.setProperty("operator.sc.replaceWith40x.enabled", "false");
 PropertyManager.setProperty("operator.value.string.length.max", "256");
+```
+
+File-based override:
+```java
+import es.us.isa.httpmutator.core.HttpMutator;
+
+HttpMutator mutator = new HttpMutator(java.nio.file.Paths.get("graphql-mutation.properties"));
+```
+
+CLI override:
+```bash
+java -jar httpmutator.jar -i traffic.jsonl --properties graphql-mutation.properties
 ```
 Reset to defaults:
 
@@ -124,6 +144,8 @@ import es.us.isa.httpmutator.core.util.PropertyManager;
 
 PropertyManager.resetProperties();
 ```
+
+See [docs/operator-configuration.md](docs/operator-configuration.md) for the complete operator-to-property mapping and example configurations.
 
 ## Extending HttpMutator
 HttpMutator is designed for extension: add new operators, customize mutation strategies, and plug in reporters or writers for your own outputs. The core API exposes extension points in `AbstractOperator`, `AbstractMutator`, `MutationStrategy`, `MutantWriter`, and `MutantReporter`.

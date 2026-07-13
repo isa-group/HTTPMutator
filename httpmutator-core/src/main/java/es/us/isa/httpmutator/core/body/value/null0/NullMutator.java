@@ -18,6 +18,9 @@ public class NullMutator extends AbstractMutator {
     public NullMutator() {
         super();
         prob = Float.parseFloat(readProperty("operator.value.null.prob"));
-        operators.put(OperatorNames.CHANGE_TYPE, new ChangeTypeOperator(NullNode.class));
+        addOperatorIfEnabled(
+                "operator.value.null.changeType.enabled",
+                OperatorNames.CHANGE_TYPE,
+                () -> new ChangeTypeOperator(NullNode.class));
     }
 }

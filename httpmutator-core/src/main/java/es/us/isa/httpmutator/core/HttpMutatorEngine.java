@@ -4,6 +4,8 @@ import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -13,6 +15,7 @@ import es.us.isa.httpmutator.core.body.value.long0.LongMutator;
 import es.us.isa.httpmutator.core.body.value.null0.NullMutator;
 import es.us.isa.httpmutator.core.body.value.string0.StringMutator;
 import es.us.isa.httpmutator.core.util.JsonManager;
+import es.us.isa.httpmutator.core.util.BodyPathIgnoreMatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,16 +51,33 @@ public class HttpMutatorEngine {
     private StringMutator stringMutator;
     private NullMutator nullMutator;
 
+    private List<String> ignoredBodyPaths;
+
     private final static double defaultPossibility = 1.0;
 
     public HttpMutatorEngine() {
+        ignoredBodyPaths = BodyPathIgnoreMatcher.parsePaths(readProperty("mutation.body.ignore.paths"));
         resetMutators();
+    }
+
+    void setIgnoredBodyPaths(Collection<String> ignoredBodyPaths) {
+        this.ignoredBodyPaths = BodyPathIgnoreMatcher.normalizePaths(ignoredBodyPaths);
+        if (bodyMutator != null) {
+            bodyMutator.setIgnoredBodyPaths(this.ignoredBodyPaths);
+        }
+    }
+
+    List<String> getIgnoredBodyPaths() {
+        return Collections.unmodifiableList(ignoredBodyPaths);
     }
 
     private void resetMutators() {
         statusCodeMutator = Boolean.parseBoolean(readProperty("operator.sc.enabled")) ? new StatusCodeMutator() : null;
         headerMutator = Boolean.parseBoolean(readProperty("operator.header.enabled")) ? new HeaderMutator() : null;
         bodyMutator = Boolean.parseBoolean(readProperty("operator.body.enabled")) ? new BodyMutator() : null;
+        if (bodyMutator != null) {
+            bodyMutator.setIgnoredBodyPaths(ignoredBodyPaths);
+        }
 
         booleanMutator = Boolean.parseBoolean(readProperty("operator.value.boolean.enabled")) ? new BooleanMutator() : null;
         doubleMutator = Boolean.parseBoolean(readProperty("operator.value.double.enabled")) ? new DoubleMutator() : null;

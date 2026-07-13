@@ -22,9 +22,18 @@ public class StatusCodeMutator extends AbstractMutator {
     public StatusCodeMutator() {
         super();
         prob = Float.parseFloat(readProperty("operator.sc.prob"));
-        operators.put(OperatorNames.REPLACE_WITH_20X, new StatusCodeReplacementWith20XOperator());
-        operators.put(OperatorNames.REPLACE_WITH_40X, new StatusCodeReplacementWith40XOperator());
-        operators.put(OperatorNames.REPLACE_WITH_50X, new StatusCodeReplacementWith50XOperator());
+        addOperatorIfEnabled(
+                "operator.sc.replaceWith20x.enabled",
+                OperatorNames.REPLACE_WITH_20X,
+                StatusCodeReplacementWith20XOperator::new);
+        addOperatorIfEnabled(
+                "operator.sc.replaceWith40x.enabled",
+                OperatorNames.REPLACE_WITH_40X,
+                StatusCodeReplacementWith40XOperator::new);
+        addOperatorIfEnabled(
+                "operator.sc.replaceWith50x.enabled",
+                OperatorNames.REPLACE_WITH_50X,
+                StatusCodeReplacementWith50XOperator::new);
     }
 
     public void getAllMutants(int statusCode, double probability, Consumer<MutantGroup> consumer) {
@@ -33,6 +42,8 @@ public class StatusCodeMutator extends AbstractMutator {
             JsonNode mutant = JsonNodeFactory.instance.numberNode((Integer) operator.mutate(statusCode));
             mutants.add(new Mutant("Status Code", mutant, this.getClass(), operator.getClass()));
         }
-        consumer.accept(new MutantGroup("Status Code", mutants));
+        if (!mutants.isEmpty()) {
+            consumer.accept(new MutantGroup("Status Code", mutants));
+        }
     }
 }

@@ -24,11 +24,26 @@ public class ObjectMutator extends AbstractObjectOrArrayMutator {
 
     public void resetOperators() {
         operators.clear();
-        operators.put(OperatorNames.REMOVE_ELEMENT, new ObjectRemoveElementOperator());
-        operators.put(OperatorNames.REMOVE_OBJECT_ELEMENT, new ObjectRemoveObjectTypeElementOperator());
-        operators.put(OperatorNames.ADD_ELEMENT, new ObjectAddElementOperator());
-        operators.put(OperatorNames.NULL, new NullOperator(ObjectNode.class));
-        operators.put(OperatorNames.CHANGE_TYPE, new ChangeTypeOperator(ObjectNode.class));
+        addOperatorIfEnabled(
+                "operator.object.removeElement.enabled",
+                OperatorNames.REMOVE_ELEMENT,
+                ObjectRemoveElementOperator::new);
+        addOperatorIfEnabled(
+                "operator.object.removeObjectElement.enabled",
+                OperatorNames.REMOVE_OBJECT_ELEMENT,
+                ObjectRemoveObjectTypeElementOperator::new);
+        addOperatorIfEnabled(
+                "operator.object.addElement.enabled",
+                OperatorNames.ADD_ELEMENT,
+                ObjectAddElementOperator::new);
+        addOperatorIfEnabled(
+                "operator.object.null.enabled",
+                OperatorNames.NULL,
+                () -> new NullOperator(ObjectNode.class));
+        addOperatorIfEnabled(
+                "operator.object.changeType.enabled",
+                OperatorNames.CHANGE_TYPE,
+                () -> new ChangeTypeOperator(ObjectNode.class));
     }
 
     public void resetFirstLevelOperators() {

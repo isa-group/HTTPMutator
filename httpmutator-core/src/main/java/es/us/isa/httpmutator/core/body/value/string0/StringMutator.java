@@ -5,7 +5,6 @@ import es.us.isa.httpmutator.core.body.value.common.operator.ChangeTypeOperator;
 import es.us.isa.httpmutator.core.body.value.common.operator.NullOperator;
 import es.us.isa.httpmutator.core.body.value.string0.operator.StringAddSpecialCharactersMutationOperator;
 import es.us.isa.httpmutator.core.body.value.string0.operator.StringBoundaryOperator;
-import es.us.isa.httpmutator.core.body.value.string0.operator.StringMutationOperator;
 import es.us.isa.httpmutator.core.body.value.string0.operator.StringReplacementOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
@@ -21,11 +20,25 @@ public class StringMutator extends AbstractMutator {
     public StringMutator() {
         super();
         prob = Float.parseFloat(readProperty("operator.value.string.prob"));
-        operators.put(OperatorNames.REPLACE, new StringReplacementOperator());
-        operators.put(OperatorNames.ADD_SPECIAL_CHARACTERS, new StringAddSpecialCharactersMutationOperator());
-//        operators.put(OperatorNames.MUTATE, new StringMutationOperator());
-        operators.put(OperatorNames.BOUNDARY, new StringBoundaryOperator());
-        operators.put(OperatorNames.NULL, new NullOperator(String.class));
-        operators.put(OperatorNames.CHANGE_TYPE, new ChangeTypeOperator(String.class));
+        addOperatorIfEnabled(
+                "operator.value.string.replace.enabled",
+                OperatorNames.REPLACE,
+                StringReplacementOperator::new);
+        addOperatorIfEnabled(
+                "operator.value.string.addSpecialCharacters.enabled",
+                OperatorNames.ADD_SPECIAL_CHARACTERS,
+                StringAddSpecialCharactersMutationOperator::new);
+        addOperatorIfEnabled(
+                "operator.value.string.boundary.enabled",
+                OperatorNames.BOUNDARY,
+                StringBoundaryOperator::new);
+        addOperatorIfEnabled(
+                "operator.value.string.null.enabled",
+                OperatorNames.NULL,
+                () -> new NullOperator(String.class));
+        addOperatorIfEnabled(
+                "operator.value.string.changeType.enabled",
+                OperatorNames.CHANGE_TYPE,
+                () -> new ChangeTypeOperator(String.class));
     }
 }

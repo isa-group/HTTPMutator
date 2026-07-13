@@ -41,6 +41,7 @@ import es.us.isa.httpmutator.core.body.value.string0.StringMutator;
 import static es.us.isa.httpmutator.core.util.JsonManager.getNodeElement;
 import static es.us.isa.httpmutator.core.util.JsonManager.insertElement;
 import es.us.isa.httpmutator.core.util.OperatorNames;
+import es.us.isa.httpmutator.core.util.BodyPathIgnoreMatcher;
 import es.us.isa.httpmutator.core.util.PropertyManager;
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 import es.us.isa.httpmutator.core.util.RandomUtils;
@@ -74,11 +75,21 @@ public class BodyMutator {
     private NullMutator nullMutator;
     private ObjectMutator objectMutator;
     private ArrayMutator arrayMutator;
+    private List<String> ignoredBodyPaths;
 
     public BodyMutator() {
         objectMapper = new ObjectMapper();
+        ignoredBodyPaths = Collections.emptyList();
         resetJsonMutator();
         resetMutators();
+    }
+
+    public void setIgnoredBodyPaths(List<String> ignoredBodyPaths) {
+        this.ignoredBodyPaths = BodyPathIgnoreMatcher.normalizePaths(ignoredBodyPaths);
+    }
+
+    public List<String> getIgnoredBodyPaths() {
+        return ignoredBodyPaths;
     }
 
     // ========== Core method: streaming processing by path ==========
@@ -138,6 +149,9 @@ public class BodyMutator {
      */
     private void getAllMutants(JsonNode jsonNode, String parentPath, 
                                         double probability, Consumer<MutantGroup> consumer) {
+        if (BodyPathIgnoreMatcher.matches("Body" + parentPath, ignoredBodyPaths)) {
+            return;
+        }
         
         List<Mutant> currentPathMutants = new ArrayList<>();
         AbstractMutator mutator = getMutator(jsonNode);
@@ -181,6 +195,11 @@ public class BodyMutator {
                 Lists.newArrayList(jsonNode.fieldNames()).get(i) : null;
             Integer index = jsonNode.isArray() ? i : null;
             String currentPath = parentPath + "/" + (index == null ? propertyName : index);
+
+            if (BodyPathIgnoreMatcher.matches("Body" + currentPath, ignoredBodyPaths)) {
+                i++;
+                continue;
+            }
             
             // Generate mutations for current element and process immediately
             List<Mutant> elementMutants = generateMutantsForElement(
@@ -747,7 +766,7 @@ public class BodyMutator {
     }
 
     /**
-     * @param propertyName  Name of the property in the json-mutation.properties
+     * @param propertyName  Name of the property in the http-mutation.properties
      *                      file, e.g., "operator.value.double.enabled"
      * @param propertyValue Value to set that property with
      */
@@ -757,7 +776,7 @@ public class BodyMutator {
     }
 
     /**
-     * Resets properties to the ones defined in json-mutation.properties
+     * Resets properties to the ones defined in http-mutation.properties
      */
     public void resetProperties() {
         PropertyManager.resetProperties();

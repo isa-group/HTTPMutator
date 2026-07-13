@@ -6,12 +6,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import es.us.isa.httpmutator.core.util.RandomUtils;
+
+import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
 
 /**
  * Superclass for mutators. A mutator decides on the type of mutation to be
@@ -45,6 +48,28 @@ public abstract class AbstractMutator {
 
     public void setOperators(LinkedHashMap<String, AbstractOperator> operators) {
         this.operators = operators;
+    }
+
+    protected void addOperatorIfEnabled(
+            String enabledProperty,
+            String operatorName,
+            Supplier<AbstractOperator> operatorSupplier) {
+        String configuredValue = readProperty(enabledProperty);
+        boolean enabled = true;
+        if (configuredValue != null) {
+            String normalizedValue = configuredValue.trim();
+            if ("true".equalsIgnoreCase(normalizedValue)) {
+                enabled = true;
+            } else if ("false".equalsIgnoreCase(normalizedValue)) {
+                enabled = false;
+            } else {
+                throw new IllegalArgumentException(
+                        "Property " + enabledProperty + " must be true or false, but was: " + configuredValue);
+            }
+        }
+        if (enabled) {
+            operators.put(operatorName, operatorSupplier.get());
+        }
     }
 
     protected boolean shouldApplyMutation() {

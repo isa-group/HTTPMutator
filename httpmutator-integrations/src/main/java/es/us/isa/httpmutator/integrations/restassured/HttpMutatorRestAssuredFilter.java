@@ -7,6 +7,7 @@ import es.us.isa.httpmutator.core.reporter.CsvReporter;
 import es.us.isa.httpmutator.core.strategy.AllOperatorsStrategy;
 import es.us.isa.httpmutator.core.strategy.MutationStrategy;
 import es.us.isa.httpmutator.core.util.RandomUtils;
+import es.us.isa.httpmutator.integrations.restassured.RestAssuredMutantAssertionCsvReporter.Outcome;
 import io.restassured.filter.Filter;
 import io.restassured.filter.FilterContext;
 import io.restassured.response.Response;
@@ -45,6 +46,7 @@ public class HttpMutatorRestAssuredFilter implements Filter {
     private final HttpMutator httpMutator;
     private final Path reportDir;
     private final MutationSummaryCsvReporter reporter;
+    private final RestAssuredMutantAssertionCsvReporter perMutantReporter;
 
     private static final Logger log = LogManager.getLogger(HttpMutatorRestAssuredFilter.class);
 
@@ -90,6 +92,7 @@ public class HttpMutatorRestAssuredFilter implements Filter {
 
         this.httpMutator = new HttpMutator(randomSeed).withMutationStrategy(mutationStrategy).addReporter(new CsvReporter(reportDir.resolve(reportName + ".csv")));
         this.reporter = new MutationSummaryCsvReporter(reportDir.resolve(reportName + "-assert-summary.csv"));
+        this.perMutantReporter = new RestAssuredMutantAssertionCsvReporter(reportDir.resolve(reportName + "-per-mutant-assertions.csv"));
         this.originalAssertionFailurePolicy = originalAssertionFailurePolicy;
     }
 
@@ -550,6 +553,7 @@ public class HttpMutatorRestAssuredFilter implements Filter {
         MutationSummary summary =  new MutationSummary(perRequestResults, totalObserved, totalWithAssertions, discardedNoAssertions, discardedOriginalAssertionFailed, mutationExecuted, totalMutantsOverall, killedMutantsOverall);
         try {
             reporter.write(summary);
+            perMutantReporter.write();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -632,28 +636,33 @@ public class HttpMutatorRestAssuredFilter implements Filter {
         final StandardHttpResponse std = interaction.getOriginalStandardResponse();
         final Consumer<ValidatableResponse> assertFunc = interaction.getAssertions();
 
+        final AtomicInteger mutantIndex = new AtomicInteger();
         final AtomicInteger total = new AtomicInteger();
         final AtomicInteger killed = new AtomicInteger();
 
         // Delegate to HttpMutator: it will provide a MutantGroup to inspect
-        httpMutator.mutate(std, interaction.label, mutated -> {
+        httpMutator.mutate(std, interaction.label, (mutated, mutant) -> {
+            int index = mutantIndex.incrementAndGet();
             try {
                 // Convert mutated response back to a RestAssured Response
                 Response raResp = RestAssuredBidirectionalConverter.INSTANCE.fromStandardResponse(mutated);
                 ValidatableResponse valMResp = raResp.then();
 
                 total.incrementAndGet();
-                log.debug("Applying assertions to mutant for request Id = {}, mutant #{}.", interaction.getLabel(), total.get());
+                log.debug("Applying assertions to mutant for request Id = {}, mutant #{}.", interaction.getLabel(), index);
 
                 try {
                     // Apply user assertions; if they fail, we consider the mutant "killed"
                     assertFunc.accept(valMResp);
+                    perMutantReporter.record(interaction.getLabel(), index, mutant, false, Outcome.SURVIVED, "");
                 } catch (AssertionError | Exception e) {
                     killed.incrementAndGet();
+                    perMutantReporter.record(interaction.getLabel(), index, mutant, true, Outcome.KILLED, exceptionMessage(e));
                 }
             } catch (ConversionException e) {
                 // If conversion fails, skip this mutant but continue processing others
                 // (we do not increment 'total' in this case).
+                perMutantReporter.record(interaction.getLabel(), index, mutant, false, Outcome.CONVERSION_FAILED, exceptionMessage(e));
             }
         });
 
@@ -665,5 +674,16 @@ public class HttpMutatorRestAssuredFilter implements Filter {
         interaction.setMessage("Mutation executed on " + totalMutants + " mutants; killed " + killedMutants + ".");
 
         return new RequestMutationResult(interaction.getLabel(), RequestStatus.MUTATION_EXECUTED, interaction.getMessage(), totalMutants, killedMutants);
+    }
+
+    private static String exceptionMessage(Throwable e) {
+        if (e == null) {
+            return "";
+        }
+        String message = e.getMessage();
+        if (message == null || message.isEmpty()) {
+            return e.getClass().getSimpleName();
+        }
+        return message;
     }
 }

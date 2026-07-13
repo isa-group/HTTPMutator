@@ -3,7 +3,6 @@ package es.us.isa.httpmutator.core.body.value.double0;
 import es.us.isa.httpmutator.core.AbstractMutator;
 import es.us.isa.httpmutator.core.body.value.common.operator.ChangeTypeOperator;
 import es.us.isa.httpmutator.core.body.value.common.operator.NullOperator;
-import es.us.isa.httpmutator.core.body.value.double0.operator.DoubleMutationOperator;
 import es.us.isa.httpmutator.core.body.value.double0.operator.DoubleReplacementOperator;
 import es.us.isa.httpmutator.core.util.OperatorNames;
 import static es.us.isa.httpmutator.core.util.PropertyManager.readProperty;
@@ -18,10 +17,18 @@ public class DoubleMutator extends AbstractMutator {
 
     public DoubleMutator() {
         super();
-        prob = Float.parseFloat(readProperty("operator.value.string.prob"));
-        operators.put(OperatorNames.REPLACE, new DoubleReplacementOperator());
-        // operators.put(OperatorNames.MUTATE, new DoubleMutationOperator());
-        operators.put(OperatorNames.NULL, new NullOperator(Double.class));
-        operators.put(OperatorNames.CHANGE_TYPE, new ChangeTypeOperator(Double.class));
+        prob = Float.parseFloat(readProperty("operator.value.double.prob"));
+        addOperatorIfEnabled(
+                "operator.value.double.replace.enabled",
+                OperatorNames.REPLACE,
+                DoubleReplacementOperator::new);
+        addOperatorIfEnabled(
+                "operator.value.double.null.enabled",
+                OperatorNames.NULL,
+                () -> new NullOperator(Double.class));
+        addOperatorIfEnabled(
+                "operator.value.double.changeType.enabled",
+                OperatorNames.CHANGE_TYPE,
+                () -> new ChangeTypeOperator(Double.class));
     }
 }
